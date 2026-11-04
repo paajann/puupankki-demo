@@ -9,7 +9,7 @@ teemasta ja omasta lisäosasta – molemmat tehty alusta asti itse.
 Demo pyörii WordPress Playgroundissa suoraan selaimessa. Mitään ei asenneta,
 eivätkä tekemäsi muutokset tallennu – sivusto rakentuu joka kerta alusta.
 
-[Avaa demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/paajann/puupankki-demo/main/blueprint.json)
+[Avaa demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/paajann/puupankki-demo/main/blueprint.json&mode=seamless&can-save=no)
 
 ## Mitä sivustolla on
 
