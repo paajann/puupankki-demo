@@ -1,0 +1,71 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "preferredVersions": {
+    "php": "8.2",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "advanced-custom-fields"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/paajann/puupankki-demo/main/theme.zip"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/paajann/puupankki-demo/main/plugin.zip"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "unzip",
+      "zipFile": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/paajann/puupankki-demo/main/uploads.zip"
+      },
+      "extractToPath": "/wordpress/wp-content"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Puupankki",
+        "blogdescription": "Tietoa puulajeista ja niiden kaytosta",
+        "permalink_structure": "/%postname%/",
+        "show_on_front": "page"
+      }
+    },
+    {
+      "step": "importWxr",
+      "file": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/paajann/puupankki-demo/main/content.xml"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\nrequire '/wordpress/wp-load.php';\n\n/* Etusivu ja artikkelisivu paikalleen */\n$etusivu    = get_page_by_path('etusivu');\n$artikkelit = get_page_by_path('artikkelit');\nif ($etusivu) {\n    update_option('show_on_front', 'page');\n    update_option('page_on_front', $etusivu->ID);\n}\nif ($artikkelit) {\n    update_option('page_for_posts', $artikkelit->ID);\n}\n\n/* Paavalikko paikalleen */\nforeach (wp_get_nav_menus() as $menu) {\n    if ($menu->count > 0) {\n        set_theme_mod('nav_menu_locations', array('primary' => $menu->term_id));\n        break;\n    }\n}\n\n/* Vimpain sivupalkkiin ja etusivun nostoihin */\n$asetukset = array(\n    'otsikko_ohje' => 'Sinua voisi kiinnostaa myos',\n    'otsikko_muu'  => 'Uusimmat rakennusohjeet',\n    'maara'        => 3,\n);\nupdate_option('widget_pp_suositellut_ohjeet', array(\n    2 => $asetukset,\n    3 => $asetukset,\n    '_multiwidget' => 1,\n));\nupdate_option('sidebars_widgets', array(\n    'wp_inactive_widgets' => array(),\n    'sivupalkki'          => array('pp_suositellut_ohjeet-2'),\n    'etusivu-nostot'      => array('pp_suositellut_ohjeet-3'),\n    'footer-1'            => array(),\n    'footer-2'            => array(),\n    'footer-3'            => array(),\n));\n\n/* Paikalliset osoitteet Playgroundin osoitteiksi */\nglobal $wpdb;\n$vanha = 'http://puupankki.local';\n$uusi  = untrailingslashit(home_url());\n$wpdb->query($wpdb->prepare(\"UPDATE {$wpdb->posts} SET post_content = REPLACE(post_content, %s, %s)\", $vanha, $uusi));\n$wpdb->query($wpdb->prepare(\"UPDATE {$wpdb->posts} SET guid = REPLACE(guid, %s, %s)\", $vanha, $uusi));\n$wpdb->query($wpdb->prepare(\"UPDATE {$wpdb->postmeta} SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_value LIKE %s\", $vanha, $uusi, '%puupankki.local%'));\n\nflush_rewrite_rules();\necho \"Puupankki valmis.\";\n"
+    }
+  ]
+}
