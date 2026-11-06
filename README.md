@@ -31,4 +31,4 @@ mitattuja lukuja.
 
 ## Tekijä
 
-Anne-Maria Pääjänen
+Anne-Maria Paajanen
